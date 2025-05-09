@@ -1,3 +1,16 @@
+// To parse this JSON data, do
+// Deserialization: Converts a JSON string into a Dart object
+// final foodData = foodDataFromJson(jsonString);
+
+// Used QuickType to generate the model classes https://app.quicktype.io/
+/* 
+This code defines how to deserialize JSON into Dart objects 
+and serialize Dart objects back into JSON. 
+*/
+
+// Serialization/Deserialization
+// JSON String -> Dart Objects
+
 import 'dart:convert';
 
 FoodData foodDataFromJson(String str) => FoodData.fromJson(json.decode(str));
@@ -97,7 +110,7 @@ class FoodSearchCriteria {
 }
 
 class Food {
-  final String fdcId;
+  final int fdcId;
   final String? dataType;
   final String? description;
   final String? foodCode;
@@ -110,7 +123,7 @@ class Food {
   final int? ndbNumber;
   final String? additionalDescriptions;
   final String? allHighlightFields;
-  final double? score;
+  final int? score;
 
   Food({
     required this.fdcId,
@@ -147,7 +160,7 @@ class Food {
     ndbNumber: json["ndbNumber"],
     additionalDescriptions: json["additionalDescriptions"],
     allHighlightFields: json["allHighlightFields"],
-    score: json["score"] != null ? (json["score"] as num).toDouble() : null,
+    score: json["score"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -169,7 +182,7 @@ class Food {
 }
 
 class FoodNutrient {
-  final double? number;
+  final int? number;
   final String? name;
   final double? amount;
   final String? unitName;
@@ -186,7 +199,7 @@ class FoodNutrient {
   });
 
   factory FoodNutrient.fromJson(Map<String, dynamic> json) => FoodNutrient(
-    number: json["number"] != null ? (json["number"] as num).toDouble() : null,
+    number: json["number"],
     name: json["name"] as String?,
     amount:
         (json["amount"] != null) ? (json["amount"] as num).toDouble() : null,
