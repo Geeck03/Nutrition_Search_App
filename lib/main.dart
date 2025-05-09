@@ -57,15 +57,9 @@ class MyAppState extends State<MyApp> {
 class NetworkManager extends ChangeNotifier {
   final String _baseURL = 'https://api.nal.usda.gov/fdc/v1';
   final String _apiKey = 'ikjpw5Ld99JHwUWTFjCEqRctWl8kGeldAVhuC0Oa';
-  FoodData? foodData;
-  // …
-  //List<Food> get foodsList => foodData?.foods ?? [];
-  //NetworkManager({required this.baseUrl, required this.BearerToken});
-  //!5 changed from false
+  FoodData? foodData; // FoodData object to hold the fetched data
   bool isLoading = false; // Flag to indicate loading state
-  String? errorMessage; // Error message to display in case of failure
-  //!3
-  //FoodData? foodData; // FoodData object to hold the fetched data
+  String? errorMessage; // Error message to display in case of failu
   String searchQuery = '';
 
   Future<void> searchFoods(String query) async {
@@ -76,12 +70,20 @@ class NetworkManager extends ChangeNotifier {
     notifyListeners();
 
     //Creates the URL for the API call
-
     // curl https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=Cheddar%20Cheese
 
     final url = Uri.parse(
       '$_baseURL/foods/search?api_key=$_apiKey&query=$query',
     );
+
+    /* 
+    https://fdc.nal.usda.gov/api-guide 
+
+    Sample curl command to test the USDA API call
+    'url_here' 
+    -H 'accept: application/json'
+    
+    */
 
     final headers = {
       //'Authorization': 'Bearer $_bearerToken',
@@ -93,17 +95,7 @@ class NetworkManager extends ChangeNotifier {
 
       //final response = await http.get('//api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=Cheddar%20Cheese');
       if (response.statusCode == 200) {
-        //final data = jsonDecode(response.body);
-        //!4 changed the results key to foods to match with JSOn
-        //print("Got to 200");
-
-        //!5
-
-        errorMessage = 'got to 200';
         foodData = foodDataFromJson(response.body);
-        // Deserialize the JSON response
-        //final foodData = FoodData.fromJson(data); // Deserialize the JSON response
-        // final foodList = (data['foods'] as List).map((e) => FoodData.fromMap);
       } else {
         errorMessage =
             'Failed to fetch foods. Status code ${response.statusCode}';
@@ -135,7 +127,7 @@ class HomeScreen extends StatelessWidget {
     // 1! add network provider
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nutrition App 23'),
+        title: const Text('Nutrition App version 0.1'),
         actions: [
           IconButton(
             icon: const Icon(Icons.brightness_6),
@@ -153,19 +145,23 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: SearchBar(
               onSubmit: (query) async {
-                Text("On submit: $query"); // Print the search query
+                //Text("On submit: $query"); // Print the search query
                 await networkManager.searchFoods(query); //!2
               }, //
             ),
           ),
 
           //!3
-          if (networkManager.isLoading) const CircularProgressIndicator(),
+          if (networkManager.isLoading)
+            const Center(child: CircularProgressIndicator()),
+
           if (networkManager.errorMessage != null)
             ErrorView(message: networkManager.errorMessage!),
+
           if (!networkManager.isLoading &&
               networkManager.foodData != null &&
-              networkManager.foodData!.foods.isEmpty)
+              networkManager.foodData!.foods.isEmpty &&
+              networkManager.searchQuery.isNotEmpty)
             const EmptyResultsView(), // Display when no results are found
 
           if (!networkManager.isLoading &&
@@ -175,9 +171,7 @@ class HomeScreen extends StatelessWidget {
               child: ListView.builder(
                 itemCount: networkManager.foodData!.foods.length,
                 itemBuilder: (context, index) {
-                  //!6 should it be final
                   final foodItem = networkManager.foodData!.foods[index];
-
                   return GestureDetector(
                     onTap:
                         () => Navigator.push(
@@ -252,10 +246,10 @@ class FoodRow extends StatelessWidget {
 }
 
 class FoodDetailView extends StatelessWidget {
-  final Food foodItem;
+  final Food food;
   // Food object to display
 
-  const FoodDetailView({super.key, required this.foodItem}); // Constructor
+  const FoodDetailView({super.key, required this.food}); // Constructor
 
   @override
   Widget build(BuildContext context) {
@@ -325,18 +319,3 @@ class FoodDetailScreen extends StatelessWidget {
     );
   }
 }
-
-// To parse this JSON data, do
-//
-
-// Deserialization: Converts a JSON string into a Dart object
-// final foodData = foodDataFromJson(jsonString);
-
-// Used QuickType to generate the model classes https://app.quicktype.io/
-/* 
-This code defines how to deserialize JSON into Dart objects 
-and serialize Dart objects back into JSON. 
-*/
-
-// Serialization/Deserialization
-// JSON String -> Dart Objects
