@@ -95,6 +95,7 @@ class NetworkManager extends ChangeNotifier {
 
       //final response = await http.get('//api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=Cheddar%20Cheese');
       if (response.statusCode == 200) {
+        print(response.body);
         foodData = foodDataFromJson(response.body);
       } else {
         errorMessage =
@@ -235,11 +236,13 @@ class FoodRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Text(
-        'hi',
+        food.fdcId.toString(), // Display the food ID',
         //food.fdcId.toString(), // Display the food name
         //food.description ?? "No description available",
       ), // Display the food name
-      title: Text('Add a description'), // Display the serving description
+      title: Text(
+        food.description ?? " no description",
+      ), // Display the serving description
       //trailing: Text('${food.suggestedServing.servingSize}${food.suggestedServing.servingUnit}'), // Display the serving size and unit
     );
   }
@@ -255,12 +258,16 @@ class FoodDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("food description"), // Display the food name in the app bar
+        title: Text(
+          "food.description ?? No Description given",
+        ), // Display the food name in the app bar
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [Text('hi', style: const TextStyle(fontSize: 18))],
+          children: [
+            Text(food.fdcId.toString(), style: const TextStyle(fontSize: 18)),
+          ],
         ),
       ),
     );
@@ -315,7 +322,10 @@ class FoodDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("hi")), // Display the food name in the app bar
+      appBar: AppBar(
+        title: Text("Nutrition information"),
+      ), // Display the food name in the app bar
     );
   }
 }
+
