@@ -4,3 +4,9 @@ The user of the app is able to search for a food items from the USDA's API. On s
 
 U.S. Department of Agriculture, Agricultural Research Service. FoodData Central, 2019. fdc.nal.usda.gov
 
+
+
+Technologies used
+ChatGpt: For trouble shooting and learning 
+Gemini: For help modifying the data type models to fit the JSON response 
+QuickType.io: To help create the data model 
