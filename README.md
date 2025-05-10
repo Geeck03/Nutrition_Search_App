@@ -1,4 +1,4 @@
-# Nutrition Search app
+# Food Search app
 
 The user of the app is able to search for a food items from the USDA's API. On submit, the user is presented with a scrollable list of options pertaining to the search query. The user may click on one of the displayed items and will be taken to the foodDetails page which lists the nutritional contents of the item. 
 
