@@ -2,11 +2,13 @@
 // Deserialization: Converts a JSON string into a Dart object
 // final foodData = foodDataFromJson(jsonString);
 
+// Note about request format: The request formoat provided by the USDA API's
+// webiste is incosistent with the actual API response.
+// Some of the variables from the API response are not in the correct format.
+// This model class is designed to handle the API response and ensure
+// that the values are in the correct format.
 // Used QuickType to generate the model classes https://app.quicktype.io/
-/* 
-This code defines how to deserialize JSON into Dart objects 
-and serialize Dart objects back into JSON. 
-*/
+// and Gemini to help polish the code to fit with the acutal API response.
 
 // Serialization/Deserialization
 // JSON String -> Dart Objects
@@ -17,95 +19,17 @@ FoodData foodDataFromJson(String str) => FoodData.fromJson(json.decode(str));
 String foodDataToJson(FoodData data) => json.encode(data.toJson());
 
 class FoodData {
-  final FoodSearchCriteria? foodSearchCriteria;
-  final int totalHits;
-  final int currentPage;
-  final int totalPages;
   final List<Food> foods;
 
-  FoodData({
-    this.foodSearchCriteria,
-    required this.totalHits,
-    required this.currentPage,
-    required this.totalPages,
-    required this.foods,
-  });
+  FoodData({required this.foods});
 
   factory FoodData.fromJson(Map<String, dynamic> json) => FoodData(
-    foodSearchCriteria:
-        json["foodSearchCriteria"] != null
-            ? FoodSearchCriteria.fromJson(json["foodSearchCriteria"])
-            : null,
-    totalHits: json["totalHits"] ?? 0,
-    currentPage: json["currentPage"] ?? 0,
-    totalPages: json["totalPages"] ?? 0,
     foods:
         (json["foods"] as List?)?.map((x) => Food.fromJson(x)).toList() ?? [],
   );
 
   Map<String, dynamic> toJson() => {
-    "foodSearchCriteria": foodSearchCriteria?.toJson(),
-    "totalHits": totalHits,
-    "currentPage": currentPage,
-    "totalPages": totalPages,
     "foods": foods.map((x) => x.toJson()).toList(),
-  };
-}
-
-class FoodSearchCriteria {
-  final String? query;
-  final List<String> dataType;
-  final int? pageSize;
-  final int? pageNumber;
-  final String? sortBy;
-  final String? sortOrder;
-  final String? brandOwner;
-  final List<String> tradeChannel;
-  final DateTime? startDate;
-  final DateTime? endDate;
-
-  FoodSearchCriteria({
-    this.query,
-    required this.dataType,
-    this.pageSize,
-    this.pageNumber,
-    this.sortBy,
-    this.sortOrder,
-    this.brandOwner,
-    required this.tradeChannel,
-    this.startDate,
-    this.endDate,
-  });
-
-  factory FoodSearchCriteria.fromJson(Map<String, dynamic> json) =>
-      FoodSearchCriteria(
-        query: json["query"],
-        dataType: List<String>.from(json["dataType"] ?? []),
-        pageSize: json["pageSize"],
-        pageNumber: json["pageNumber"],
-        sortBy: json["sortBy"],
-        sortOrder: json["sortOrder"],
-        brandOwner: json["brandOwner"],
-        tradeChannel: List<String>.from(json["tradeChannel"] ?? []),
-        startDate:
-            json["startDate"] != null
-                ? DateTime.tryParse(json["startDate"])
-                : null,
-        endDate:
-            json["endDate"] != null ? DateTime.tryParse(json["endDate"]) : null,
-      );
-
-  Map<String, dynamic> toJson() => {
-    "query": query,
-    "dataType": dataType,
-    "pageSize": pageSize,
-    "pageNumber": pageNumber,
-    "sortBy": sortBy,
-    "sortOrder": sortOrder,
-    "brandOwner": brandOwner,
-    "tradeChannel": tradeChannel,
-    "startDate": startDate?.toIso8601String(),
-    "endDate": endDate?.toIso8601String(),
   };
 }
 
@@ -115,15 +39,6 @@ class Food {
   final String? description;
   final String? foodCode;
   final List<FoodNutrient> foodNutrients;
-  final String? publicationDate;
-  final String? scientificName;
-  final String? brandOwner;
-  final String? gtinUpc;
-  final String? ingredients;
-  final int? ndbNumber;
-  final String? additionalDescriptions;
-  final String? allHighlightFields;
-  final int? score;
 
   Food({
     required this.fdcId,
@@ -131,36 +46,19 @@ class Food {
     this.description,
     this.foodCode,
     required this.foodNutrients,
-    this.publicationDate,
-    this.scientificName,
-    this.brandOwner,
-    this.gtinUpc,
-    this.ingredients,
-    this.ndbNumber,
-    this.additionalDescriptions,
-    this.allHighlightFields,
-    this.score,
   });
 
   factory Food.fromJson(Map<String, dynamic> json) => Food(
-    fdcId: json["fdcId"],
-    dataType: json["dataType"],
-    description: json["description"],
-    foodCode: json["foodCode"],
+    fdcId: json["fdcId"] is String ? int.parse(json["fdcId"]) : json["fdcId"],
+    // Convert fdcId to String
+    dataType: json["dataType"]?.toString(),
+    description: json["description"]?.toString(),
+    foodCode: json["foodCode"]?.toString(),
     foodNutrients:
         (json["foodNutrients"] as List?)
             ?.map((x) => FoodNutrient.fromJson(x))
             .toList() ??
         [],
-    publicationDate: json["publicationDate"],
-    scientificName: json["scientificName"],
-    brandOwner: json["brandOwner"],
-    gtinUpc: json["gtinUpc"],
-    ingredients: json["ingredients"],
-    ndbNumber: json["ndbNumber"],
-    additionalDescriptions: json["additionalDescriptions"],
-    allHighlightFields: json["allHighlightFields"],
-    score: json["score"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -169,50 +67,80 @@ class Food {
     "description": description,
     "foodCode": foodCode,
     "foodNutrients": foodNutrients.map((x) => x.toJson()).toList(),
-    "publicationDate": publicationDate,
-    "scientificName": scientificName,
-    "brandOwner": brandOwner,
-    "gtinUpc": gtinUpc,
-    "ingredients": ingredients,
-    "ndbNumber": ndbNumber,
-    "additionalDescriptions": additionalDescriptions,
-    "allHighlightFields": allHighlightFields,
-    "score": score,
   };
 }
 
 class FoodNutrient {
-  final int? number;
+  final int? nutrientId;
   final String? name;
-  final double? amount;
+  final String? nutrientNumber;
   final String? unitName;
+  final double? amount;
+  final int? rank;
+  final int? indentLevel;
+  final int? foodNutrientId;
+
+  // Optional, if these keys can appear in other contexts from the API
   final String? derivationCode;
   final String? derivationDescription;
 
   FoodNutrient({
-    this.number,
+    this.nutrientId,
     this.name,
-    this.amount,
+    this.nutrientNumber,
     this.unitName,
+    this.amount,
+    this.rank,
+    this.indentLevel,
+    this.foodNutrientId,
     this.derivationCode,
     this.derivationDescription,
   });
 
-  factory FoodNutrient.fromJson(Map<String, dynamic> json) => FoodNutrient(
-    number: json["number"],
-    name: json["name"] as String?,
-    amount:
-        (json["amount"] != null) ? (json["amount"] as num).toDouble() : null,
-    unitName: json["unitName"] as String?,
-    derivationCode: json["derivationCode"] as String?,
-    derivationDescription: json["derivationDescription"] as String?,
-  );
+  factory FoodNutrient.fromJson(Map<String, dynamic> json) {
+    // Helper function to safely parse a value that might be an int or double from various types
+    double? parseDouble(dynamic value) {
+      if (value == null) return null;
+      if (value is double) return value;
+      if (value is int) return value.toDouble();
+      if (value is String) return double.tryParse(value);
+      return null;
+    }
+
+    int? parseInt(dynamic value) {
+      if (value == null) return null;
+      if (value is int) return value;
+      if (value is String) return int.tryParse(value);
+      return null;
+    }
+
+    return FoodNutrient(
+      nutrientId: parseInt(json["nutrientId"]),
+      name: json["nutrientName"] as String?, // Use "nutrientName"
+      nutrientNumber:
+          json["nutrientNumber"]
+              as String?, // Use "nutrientNumber", keep as String
+      unitName: json["unitName"] as String?,
+      amount: parseDouble(json["value"]), // Use "value" and parse safely
+      rank: parseInt(json["rank"]),
+      indentLevel: parseInt(json["indentLevel"]),
+      foodNutrientId: parseInt(json["foodNutrientId"]),
+      derivationCode:
+          json["derivationCode"] as String?, // Keep if API might send it
+      derivationDescription:
+          json["derivationDescription"] as String?, // Keep if API might send it
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-    "number": number,
-    "name": name,
-    "amount": amount,
+    "nutrientId": nutrientId,
+    "nutrientName": name, // Map back to API key name
+    "nutrientNumber": nutrientNumber,
     "unitName": unitName,
+    "value": amount, // Map back to API key name
+    "rank": rank,
+    "indentLevel": indentLevel,
+    "foodNutrientId": foodNutrientId,
     "derivationCode": derivationCode,
     "derivationDescription": derivationDescription,
   };
