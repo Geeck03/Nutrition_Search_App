@@ -11,6 +11,6 @@ API:  U.S. Department of Agriculture, Agricultural Research Service. FoodData Ce
 
 ChatGpt: For trouble shooting and learning 
 
-Gemini: For help modifying the data type models to fit the JSON response 
+Gemini: For help modifying the data type models to fit the JSON response. Trouble shooting and learning
 
 QuickType.io: To help create the data model 
