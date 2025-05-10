@@ -7,6 +7,9 @@ U.S. Department of Agriculture, Agricultural Research Service. FoodData Central,
 
 
 Technologies used
+
 ChatGpt: For trouble shooting and learning 
+
 Gemini: For help modifying the data type models to fit the JSON response 
+
 QuickType.io: To help create the data model 
