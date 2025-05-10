@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:honors_app/models/food_model.dart';
 
 // U.S. Department of Agriculture, Agricultural Research Service. FoodData Central, 2019. fdc.nal.usda.gov.
 
-//root of app
+//root of the app
 void main() {
   runApp(
     ChangeNotifierProvider(
@@ -37,7 +36,8 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Nutrition App',
+      debugShowCheckedModeBanner: false,
+      title: 'Nutrition Search App',
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(), // Use dark theme when isDarkMode is true
       themeMode:
@@ -51,7 +51,7 @@ class MyAppState extends State<MyApp> {
   }
 }
 
-//Use to mange the search query and the API call to the USDA API
+// Use to mange the search query and the API call to the USDA API
 // This class is responsible for fetching food data from the USDA API
 // and managing the state of the app.
 class NetworkManager extends ChangeNotifier {
@@ -59,17 +59,17 @@ class NetworkManager extends ChangeNotifier {
   final String _apiKey = 'ikjpw5Ld99JHwUWTFjCEqRctWl8kGeldAVhuC0Oa';
   FoodData? foodData; // FoodData object to hold the fetched data
   bool isLoading = false; // Flag to indicate loading state
-  String? errorMessage; // Error message to display in case of failu
+  String? errorMessage; // Error message to display in case of failure
   String searchQuery = '';
 
   Future<void> searchFoods(String query) async {
     if (query.isEmpty) return;
 
-    isLoading = true; //when function is called, set loading to true
+    isLoading = true; // when function is called, set loading to true
     errorMessage = null;
     notifyListeners();
 
-    //Creates the URL for the API call
+    // Creates the URL for the API call
     // curl https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=Cheddar%20Cheese
 
     final url = Uri.parse(
@@ -78,25 +78,19 @@ class NetworkManager extends ChangeNotifier {
 
     /* 
     https://fdc.nal.usda.gov/api-guide 
-
     Sample curl command to test the USDA API call
     'url_here' 
     -H 'accept: application/json'
-    
     */
 
-    final headers = {
-      //'Authorization': 'Bearer $_bearerToken',
-      'accept': 'application/json',
-    };
+    final headers = {'accept': 'application/json'};
 
     try {
       final response = await http.get(url, headers: headers);
 
-      //final response = await http.get('//api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=Cheddar%20Cheese');
       if (response.statusCode == 200) {
-        print(response.body);
         foodData = foodDataFromJson(response.body);
+        // Uses function from food_model.dart to parse the JSON response
       } else {
         errorMessage =
             'Failed to fetch foods. Status code ${response.statusCode}';
@@ -111,24 +105,17 @@ class NetworkManager extends ChangeNotifier {
 }
 
 class HomeScreen extends StatelessWidget {
-  final Function
-  toggleTheme; // Function to toggle the them// Food object to display
+  final Function toggleTheme; // Function to toggle the theme
 
   const HomeScreen({super.key, required this.toggleTheme}); // Constructor
 
   @override
   Widget build(BuildContext context) {
-    final networkManager = Provider.of<NetworkManager>(
-      context,
-    ); // 1! add network provider
-    //String? food;
+    final networkManager = Provider.of<NetworkManager>(context);
 
-    //FoodData foodData;
-
-    // 1! add network provider
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nutrition App version 0.1'),
+        title: const Text('Nutrition App'),
         actions: [
           IconButton(
             icon: const Icon(Icons.brightness_6),
@@ -139,15 +126,21 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: Column(
-        //mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text("Nutrition APP!"),
+          Text(
+            "Insert food name to search",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+            ),
+          ),
+
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(15.0),
             child: SearchBar(
               onSubmit: (query) async {
-                //Text("On submit: $query"); // Print the search query
-                await networkManager.searchFoods(query); //!2
+                await networkManager.searchFoods(query);
               }, //
             ),
           ),
@@ -193,7 +186,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-//UI for serach bar. Sends the search query to the parent widget
+// UI for serach bar. Sends the search query to the parent widget
 // when the search button is pressed.
 class SearchBar extends StatelessWidget {
   final Function(String) onSubmit; // on submit state takes it
@@ -236,14 +229,11 @@ class FoodRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Text(
-        food.fdcId.toString(), // Display the food ID',
-        //food.fdcId.toString(), // Display the food name
-        //food.description ?? "No description available",
-      ), // Display the food name
+        food.fdcId.toString(), // Display the food ID
+      ),
       title: Text(
         food.description ?? " no description",
-      ), // Display the serving description
-      //trailing: Text('${food.suggestedServing.servingSize}${food.suggestedServing.servingUnit}'), // Display the serving size and unit
+      ), // Display the serving descriptionisplay the serving size and unit
     );
   }
 }
@@ -323,9 +313,54 @@ class FoodDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Nutrition information"),
-      ), // Display the food name in the app bar
+        title: FittedBox(
+          //Makes the text fit in the app bar
+          fit: BoxFit.scaleDown,
+          child: Text("${food.description}", style: TextStyle(fontSize: 20)),
+        ), // Display the food name in the app bar
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Nutritional Information (per 100g or 100mL as applicable):",
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
+
+          Expanded(
+            child: ListView.builder(
+              itemCount: food.foodNutrients.length,
+
+              shrinkWrap:
+                  true, // Prevents the ListView from taking up infinite space
+              itemBuilder: (context, index) {
+                final nutrient = food.foodNutrients[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12.0,
+                    vertical: 4.0,
+                  ),
+                  child: ListTile(
+                    leading: Text(
+                      nutrient.name ?? "No name",
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: Text(
+                        "Amount: ${nutrient.amount?.toStringAsFixed(2) ?? 'N/A'}  ${nutrient.unitName ?? ''}",
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
-
