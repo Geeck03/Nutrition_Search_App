@@ -8,7 +8,7 @@ Navigate to the main.dart and run the app from there
 
 
 
-##Technologies used
+## Technologies used
 
 API:  U.S. Department of Agriculture, Agricultural Research Service. FoodData Central, 2019. fdc.nal.usda.gov
 
