@@ -3,10 +3,10 @@
 // final foodData = foodDataFromJson(jsonString);
 
 // Note about request format: The request formoat provided by the USDA API's
-// webiste is incosistent with the actual API response.
+// webiste is inconsistent with the actual API response.
 // Some of the variables from the API response are not in the correct format.
 // This model class is designed to handle the API response and ensure
-// that the values are in the correct format.
+// that the values are in their correct format.
 // Used QuickType to generate the model classes https://app.quicktype.io/
 // and Gemini to help polish the code to fit with the acutal API response.
 
