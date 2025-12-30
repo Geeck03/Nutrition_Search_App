@@ -1,7 +1,6 @@
 # Nutrition Search app
 
-The user of the app is able to search for a food items from the USDA's API. On submit, the user is presented with a scrollable list of options pertaining to the search query. The user may click on one of the displayed items and will be taken to the foodDetails page which lists the nutritional contents of the item. 
-
+A simple food search app. that connects to the USDA's API, allowing the user to search for a food item and view its nutritional values. The user is able to search for a food and on submit, the user is presented with a scrollable list of options pertaining to the search query. The user may click on one of the displayed items and will be taken to the foodDetails page which lists the nutritional contents of the item.
 
 ## How to use
 Navigate to the main.dart and run the app from there 
